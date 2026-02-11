@@ -3,43 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dmovie - Watch Free Movies & TV Shows Online</title>
-    
+    <title>Dmovies - Watch Free Movies & TV Shows</title>
     <link rel="stylesheet" href="css/home.css">
-    
-    <!-- Gagamit tayo ng Montserrat dahil malapit ito sa SF Pro style -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <header>
-        <!-- Branding: D (Bold/Green) + movies (Italic/Grey) -->
-        <div class="logo">D<span>movies</span></div>
+        <div class="logo" style="cursor:pointer" onclick="location.reload()">D<span>movies</span></div>
         <nav>
             <ul>
-                <li><a href="#">Home</a></li>
+                <li><a href="#" onclick="location.reload()">Home</a></li>
                 <li><a href="#">Movies</a></li>
                 <li><a href="#">TV Shows</a></li>
             </ul>
         </nav>
     </header>
 
-    <section class="hero">
-        <h1>Watch Free Movies Online</h1>
-        <p>Explore thousands of titles at your fingertips.</p>
-        
-        <form id="search-form">
-            <input type="text" id="search-input" placeholder="Enter keywords..." autocomplete="off">
-            <button type="submit">SEARCH</button>
-        </form>
-    </section>
+    <!-- VIEW 1: HOME PAGE -->
+    <div id="home-view">
+        <section class="hero">
+            <h1>Watch Free Movies Online</h1>
+            <form id="search-form">
+                <input type="text" id="search-input" placeholder="Enter keywords..." autocomplete="off">
+                <button type="submit">SEARCH</button>
+            </form>
+        </section>
+        <main id="movie-grid" class="container"></main>
+    </div>
 
-    <!-- Movie Grid Container -->
-    <main id="movie-grid" class="container"></main>
+    <!-- VIEW 2: DETAILS PAGE (Gaya ng Bogge.tv) -->
+    <div id="details-view" style="display:none;">
+        <div id="details-backdrop" class="backdrop">
+            <div class="backdrop-overlay">
+                <div class="details-content container">
+                    <button class="back-btn" onclick="showHome()">← Back to Home</button>
+                    <div class="main-info">
+                        <img id="details-poster" src="" alt="">
+                        <div class="text-info">
+                            <h2 id="details-title"></h2>
+                            <p id="details-desc"></p>
+                            <div class="meta-data">
+                                <span id="details-rating"></span> | <span id="details-year"></span>
+                            </div>
+                            <button class="watch-now-btn" onclick="scrollToPlayer()">WATCH NOW</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PLAYER AREA & EPISODES -->
+        <div class="watch-section container">
+            <div id="player-container" class="player-wrapper" style="display:none;">
+                <iframe id="video-iframe" src="" frameborder="0" allowfullscreen></iframe>
+            </div>
+
+            <div id="tv-controls" style="display:none;">
+                <div class="season-tabs" id="season-tabs"></div>
+                <div class="episode-list" id="episode-list"></div>
+            </div>
+        </div>
+    </div>
 
     <footer>
-        <p>&copy; 2024 Dmovie. All rights reserved.</p>
-        <p style="font-size: 10px; margin-top: 5px; color: #444;">Powered by TMDB API</p>
+        <p>&copy; 2024 Dmovie. Powered by TMDB API.</p>
     </footer>
 
     <script src="js/home.js"></script>
