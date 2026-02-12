@@ -3,12 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dmovies - Watch Free Movies & TV Shows Online</title>
     
-    <link rel="icon" type="image/png" href="DmoviesFavicon.png">
-    <meta name="description" content="Watch movies and TV shows online for free in HD. Dmovies offers streaming with subtitles and no registration.">
-    <meta property="og:image" content="DmoviesLogo.png">
+    <!-- TITLE NG SITE MO -->
+    <title>Dmovies - Watch Free Movies & TV Shows Online</title>
 
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" href="DmoviesFavicon.png">
+
+    <!-- SEO & META TAGS (ITO NA YUNG KUMPLETO) -->
+    <meta name="description" content="Watch the latest movies and TV shows online for free in HD quality on Dmovies. No registration required.">
+    <meta name="keywords" content="movies, streaming, free cinema, Dmovies, watch tv shows online, the strain free, free movies online, watch hd movies, pinoy movies">
+    
+    <!-- SOCIAL MEDIA PREVIEW (FB/Messenger) -->
+    <meta property="og:title" content="Dmovies - Your Home for Free Streaming">
+    <meta property="og:description" content="Stream thousands of movies and series for free. Watch Dmovies now!">
+    <meta property="og:image" content="DmoviesLogo.png">
+    <meta property="og:url" content="https://dmovies.pages.dev/">
+
+    <!-- STYLES -->
     <link rel="stylesheet" href="css/home.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
 </head>
@@ -20,7 +32,7 @@
         </div>
         <nav>
             <ul>
-                <!-- DITO ANG UPDATE: Tinatawag na ang mga functions -->
+                <!-- MENU WITH FUNCTIONS -->
                 <li><a href="#" onclick="loadHomepage()">Home</a></li>
                 <li><a href="#" onclick="loadGenres()">Genre</a></li>
                 <li><a href="#" onclick="loadMoviesPage()">Movies</a></li>
@@ -29,6 +41,7 @@
         </nav>
     </header>
 
+    <!-- VIEW 1: HOME PAGE -->
     <div id="home-view">
         <section class="hero">
             <h1>Find Movies, TV shows and more</h1>
@@ -65,7 +78,7 @@
         </main>
     </div>
 
-    <!-- DETAILS VIEW -->
+    <!-- VIEW 2: DETAILS PAGE -->
     <div id="details-view" style="display:none;">
         <div id="details-backdrop" class="backdrop">
             <div class="backdrop-overlay">
@@ -76,6 +89,7 @@
                         <div class="text-info">
                             <h2 id="details-title"></h2>
                             
+                            <!-- DETAILS & RUNTIME -->
                             <div class="meta-data">
                                 <span id="details-rating"></span> • 
                                 <span id="details-year"></span> • 
