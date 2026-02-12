@@ -1,5 +1,5 @@
 const API_KEY = 'ff92f7f3c703f962c7ef5f13285067c3';
-const IMG_PATH = 'https://image.tmdb.org/t/p/w500';
+const IMG_PATH = 'https://image.tmdb.org/t/p/w500'; // Optimized size
 const BACKDROP_PATH = 'https://image.tmdb.org/t/p/original';
 
 let currentId = null;
@@ -12,40 +12,88 @@ const homeView = document.getElementById('home-view');
 const detailsView = document.getElementById('details-view');
 const iframe = document.getElementById('video-iframe');
 const srvSwitcher = document.getElementById('server-switcher');
-const searchResults = document.getElementById('search-results');
+const searchSection = document.getElementById('search-results');
 const homepageContent = document.getElementById('homepage-content');
 
-// Initial Load
+// --- INITIAL LOAD ---
 loadHomepage();
 
 async function loadHomepage() {
-    fetch(`https://api.themoviedb.org/3/trending/all/day?api_key=${API_KEY}`).then(r => r.json()).then(d => renderRow(d.results, 'trending-list'));
-    fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&sort_by=release_date.desc&vote_count.gte=100`).then(r => r.json()).then(d => renderRow(d.results, 'latest-movies-list'));
-    fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}&sort_by=first_air_date.desc&vote_count.gte=50`).then(r => r.json()).then(d => renderRow(d.results, 'latest-tv-list'));
+    // Load Trending
+    fetch(`https://api.themoviedb.org/3/trending/all/day?api_key=${API_KEY}`)
+        .then(r => r.json())
+        .then(d => renderRow(d.results, 'trending-list'));
+
+    // Load Latest Movies
+    fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&sort_by=release_date.desc&vote_count.gte=50`)
+        .then(r => r.json())
+        .then(d => renderRow(d.results, 'latest-movies-list'));
+
+    // Load Latest TV
+    fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}&sort_by=first_air_date.desc&vote_count.gte=20`)
+        .then(r => r.json())
+        .then(d => renderRow(d.results, 'latest-tv-list'));
 }
 
 function renderRow(items, elementId) {
     const container = document.getElementById(elementId);
     if (!container) return;
     container.innerHTML = '';
+
     items.forEach(item => {
         if (!item.poster_path) return;
         const card = document.createElement('div');
         card.className = 'movie-card';
-        const year = (item.release_date || item.first_air_date || "N/A").split('-')[0];
-        const type = item.media_type === 'tv' || item.first_air_date ? 'TV' : 'Movie';
         
+        // Metadata Setup
+        const year = (item.release_date || item.first_air_date || "N/A").split('-')[0];
+        const mediaType = item.media_type || (item.first_air_date ? 'tv' : 'movie');
+        const typeLabel = mediaType === 'tv' ? 'TV Shows' : 'Movie';
+        const durationId = `dur-${item.id}`; // Unique ID for runtime update
+
         card.innerHTML = `
-            <img src="${IMG_PATH + item.poster_path}" loading="lazy">
+            <img src="${IMG_PATH + item.poster_path}" loading="lazy" alt="${item.title}">
             <div class="movie-info">
                 <h3>${item.title || item.name}</h3>
-                <span>${year} • ${type}</span>
+                <div class="meta-row">
+                    <span class="meta-left">
+                        ${year} • <span id="${durationId}" style="color:#a6d5bf; font-size:11px;">...</span>
+                    </span>
+                    <span class="type-badge">${typeLabel}</span>
+                </div>
             </div>`;
+        
         card.onclick = () => showDetails(item);
         container.appendChild(card);
+
+        // BACKGROUND FETCH: Kuhanin ang minutes isa-isa
+        fetchRuntime(item.id, mediaType, durationId);
     });
 }
 
+// Function para kuhanin ang minutes (runtime) nang hindi nagla-lag
+function fetchRuntime(id, type, spanId) {
+    // Kung TV, wag na kuhanin ang runtime para mabilis (ilagay na lang 'Series')
+    if(type === 'tv') {
+        setTimeout(() => {
+            const el = document.getElementById(spanId);
+            if(el) el.innerText = "Series";
+        }, 100);
+        return;
+    }
+
+    // Kung Movie, fetch details
+    fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}`)
+        .then(r => r.json())
+        .then(d => {
+            const el = document.getElementById(spanId);
+            if(el && d.runtime) el.innerText = `${d.runtime}m`;
+            else if(el) el.innerText = "";
+        })
+        .catch(() => {});
+}
+
+// --- DETAILS VIEW ---
 async function showDetails(item) {
     homeView.style.display = 'none';
     detailsView.style.display = 'block';
@@ -54,7 +102,6 @@ async function showDetails(item) {
     currentId = item.id;
     currentType = item.media_type || (item.first_air_date ? 'tv' : 'movie');
 
-    // Basic Info
     document.getElementById('details-backdrop').style.backgroundImage = `url(${BACKDROP_PATH + item.backdrop_path})`;
     document.getElementById('details-poster').src = IMG_PATH + item.poster_path;
     document.getElementById('details-title').innerText = item.title || item.name;
@@ -62,17 +109,12 @@ async function showDetails(item) {
     document.getElementById('details-rating').innerText = "★ " + (item.vote_average || 0).toFixed(1);
     document.getElementById('details-year').innerText = (item.release_date || item.first_air_date || "").split('-')[0];
     
-    // NEW: FETCH RUNTIME/DURATION
+    // Fetch Runtime for Details Page
     const runtimeUrl = `https://api.themoviedb.org/3/${currentType}/${currentId}?api_key=${API_KEY}`;
     fetch(runtimeUrl).then(r => r.json()).then(details => {
         let duration = "";
-        if(currentType === 'movie' && details.runtime) {
-            duration = `${details.runtime}m`;
-        } else if(currentType === 'tv' && details.episode_run_time?.length > 0) {
-            duration = `${details.episode_run_time[0]}m`;
-        } else {
-            duration = currentType === 'tv' ? "Series" : "Movie";
-        }
+        if(currentType === 'movie' && details.runtime) duration = `${details.runtime}m`;
+        else if(currentType === 'tv' && details.episode_run_time?.length > 0) duration = `${details.episode_run_time[0]}m`;
         document.getElementById('details-runtime').innerText = duration;
     });
 
@@ -89,10 +131,10 @@ async function showDetails(item) {
     }
 }
 
+// --- PLAYER LOGIC ---
 function updatePlayer() {
     let url = "";
     const params = "?auto_play=1&sub_f=1&ds_lang=en&sc_r=1&iv_load_policy=3"; 
-
     if (currentType === 'movie') {
         if (currentSrv === 1) url = `https://vidsrc.to/embed/movie/${currentId}${params}`;
         if (currentSrv === 2) url = `https://vidsrc.xyz/embed/movie/${currentId}${params}`;
@@ -102,7 +144,6 @@ function updatePlayer() {
         if (currentSrv === 2) url = `https://vidsrc.xyz/embed/tv/${currentId}/${currentS}/${currentE}${params}`;
         if (currentSrv === 3) url = `https://vidsrc.me/embed/tv?tmdb=${currentId}&sea=${currentS}&epi=${currentE}`;
     }
-    
     document.getElementById('player-container').style.display = 'block';
     iframe.src = url;
 }
@@ -146,16 +187,8 @@ async function loadEpisodes(id, s) {
     });
 }
 
-function showHome() { 
-    homeView.style.display = 'block'; 
-    detailsView.style.display = 'none'; 
-    iframe.src = '';
-}
-
-function scrollToPlayer() { 
-    const el = document.getElementById('watch-section');
-    if(el) window.scrollTo({ top: el.offsetTop - 60, behavior: 'smooth' });
-}
+function showHome() { homeView.style.display = 'block'; detailsView.style.display = 'none'; iframe.src = ''; }
+function scrollToPlayer() { const el = document.getElementById('watch-section'); if(el) window.scrollTo({ top: el.offsetTop - 60, behavior: 'smooth' }); }
 
 document.getElementById('search-form').onsubmit = async (e) => {
     e.preventDefault();
@@ -163,6 +196,7 @@ document.getElementById('search-form').onsubmit = async (e) => {
     if (!val) return;
     const d = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${val}`).then(r => r.json());
     homepageContent.style.display = 'none';
-    document.getElementById('search-results').style.display = 'block';
+    searchSection.style.display = 'block';
     renderRow(d.results, 'search-list');
+    document.getElementById('search-list').className = 'card-row-grid';
 };
