@@ -2,9 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dmovies - Watch Free Movies & TV Shows Online</title>
+    
+    <!-- Favicon & SEO -->
     <link rel="icon" type="image/png" href="DmoviesFavicon.png">
+    <meta name="description" content="Watch movies and TV shows online for free in HD. Dmovies offers streaming with subtitles and no registration.">
+    <meta property="og:image" content="DmoviesLogo.png">
+
     <link rel="stylesheet" href="css/home.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
 </head>
@@ -12,7 +17,7 @@
 
     <header>
         <div class="logo" style="cursor:pointer" onclick="location.reload()">
-            <img src="DmoviesLogo.png" alt="Dmovies Logo" style="height: 45px;">
+            <img src="DmoviesLogo.png" alt="Dmovies Logo">
         </div>
         <nav>
             <ul>
@@ -29,20 +34,20 @@
         <section class="hero">
             <h1>Find Movies, TV shows and more</h1>
             <form id="search-form">
-                <input type="text" id="search-input" placeholder="Enter keywords..." autocomplete="off">
+                <input type="text" id="search-input" placeholder="Search..." autocomplete="off">
                 <button type="submit">SEARCH</button>
             </form>
         </section>
         
-        <main id="main-content" class="container">
-            <!-- Dito lalabas ang Search Results (Nakatago sa simula) -->
-            <div id="search-section" style="display:none; margin-bottom:50px;">
+        <main class="container">
+            <!-- Search Results Container -->
+            <div id="search-results" style="display:none;">
                 <h2 class="section-title">Search Results</h2>
                 <div id="search-list" class="card-row-grid"></div>
             </div>
 
-            <!-- Trending Section -->
-            <div id="homepage-sections">
+            <!-- Homepage Sections -->
+            <div id="homepage-content">
                 <section class="movie-section">
                     <h2 class="section-title">Trending Now</h2>
                     <div id="trending-list" class="card-row"></div>
@@ -61,7 +66,7 @@
         </main>
     </div>
 
-    <!-- VIEW 2: DETAILS PAGE -->
+    <!-- VIEW 2: DETAILS & PLAYER PAGE -->
     <div id="details-view" style="display:none;">
         <div id="details-backdrop" class="backdrop">
             <div class="backdrop-overlay">
@@ -71,10 +76,10 @@
                         <img id="details-poster" src="" alt="">
                         <div class="text-info">
                             <h2 id="details-title"></h2>
-                            <p id="details-desc"></p>
                             <div class="meta-data">
-                                <span id="details-rating"></span> | <span id="details-year"></span>
+                                <span id="details-rating"></span> • <span id="details-year"></span>
                             </div>
+                            <p id="details-desc"></p>
                             <button class="watch-now-btn" onclick="scrollToPlayer()">WATCH NOW</button>
                         </div>
                     </div>
@@ -83,12 +88,14 @@
         </div>
 
         <div id="watch-section" class="watch-section container">
-            <div id="player-container" class="player-wrapper" style="display:none;">
+            <!-- PLAYER CONTAINER (Fixed Ratio for Mobile) -->
+            <div id="player-container" class="player-wrapper">
                 <iframe id="video-iframe" src="" frameborder="0" allowfullscreen></iframe>
             </div>
 
+            <!-- SERVER SWITCHER -->
             <div id="server-switcher" class="server-switcher" style="display:none;">
-                <p>If current server is slow or has too many ads, try others below:</p>
+                <p>If the player is slow or has too many ads, try another server:</p>
                 <div class="server-list">
                     <button class="srv-btn active" onclick="changeServer(1)">Server 1</button>
                     <button class="srv-btn" onclick="changeServer(2)">Server 2</button>
@@ -96,8 +103,9 @@
                 </div>
             </div>
 
+            <!-- TV EPISODES -->
             <div id="tv-controls" style="display:none;">
-                <h3 style="margin-bottom:15px; color:#a6d5bf;">Seasons & Episodes</h3>
+                <h3 style="margin-bottom:15px; color:#a6d5bf;">Select Episode</h3>
                 <div class="season-tabs" id="season-tabs"></div>
                 <div class="episode-list" id="episode-list"></div>
             </div>
@@ -105,11 +113,12 @@
     </div>
 
     <footer>
-        <p>&copy; 2024 Dmovies. Powered by TMDB API</p>
+        <p>&copy; 2024 Dmovies. Powered by TMDB.</p>
     </footer>
 
-    <!-- ADSTERRA -->
+    <!-- ADSTERRA CODE -->
     <script src="https://pl28698254.effectivegatecpm.com/77/85/e3/7785e37cf5cfc06b7139a449d3a81235.js"></script>
+
     <script src="js/home.js"></script>
 </body>
 </html>

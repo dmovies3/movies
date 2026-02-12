@@ -1,5 +1,5 @@
 const API_KEY = 'ff92f7f3c703f962c7ef5f13285067c3';
-const IMG_PATH = 'https://image.tmdb.org/t/p/w1280';
+const IMG_PATH = 'https://image.tmdb.org/t/p/w500'; // Changed to w500 for faster mobile load
 const BACKDROP_PATH = 'https://image.tmdb.org/t/p/original';
 
 let currentId = null;
@@ -12,15 +12,17 @@ const homeView = document.getElementById('home-view');
 const detailsView = document.getElementById('details-view');
 const iframe = document.getElementById('video-iframe');
 const srvSwitcher = document.getElementById('server-switcher');
-const searchSection = document.getElementById('search-section');
-const homepageSections = document.getElementById('homepage-sections');
+const searchList = document.getElementById('search-list');
+const searchResults = document.getElementById('search-results');
+const homepageContent = document.getElementById('homepage-content');
 
+// Initial Load
 loadHomepage();
 
 async function loadHomepage() {
     fetch(`https://api.themoviedb.org/3/trending/all/day?api_key=${API_KEY}`).then(r => r.json()).then(d => renderRow(d.results, 'trending-list'));
-    fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&sort_by=popularity.desc`).then(r => r.json()).then(d => renderRow(d.results, 'latest-movies-list'));
-    fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}&sort_by=popularity.desc`).then(r => r.json()).then(d => renderRow(d.results, 'latest-tv-list'));
+    fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&sort_by=release_date.desc&vote_count.gte=100`).then(r => r.json()).then(d => renderRow(d.results, 'latest-movies-list'));
+    fetch(`https://api.themoviedb.org/3/discover/tv?api_key=${API_KEY}&sort_by=first_air_date.desc&vote_count.gte=50`).then(r => r.json()).then(d => renderRow(d.results, 'latest-tv-list'));
 }
 
 function renderRow(items, elementId) {
@@ -31,7 +33,16 @@ function renderRow(items, elementId) {
         if (!item.poster_path) return;
         const card = document.createElement('div');
         card.className = 'movie-card';
-        card.innerHTML = `<img src="${IMG_PATH + item.poster_path}"><div class="movie-info"><h3>${item.title || item.name}</h3></div>`;
+        // Check Metadata
+        const year = (item.release_date || item.first_air_date || "N/A").split('-')[0];
+        const type = item.media_type === 'tv' || item.first_air_date ? 'TV' : 'Movie';
+        
+        card.innerHTML = `
+            <img src="${IMG_PATH + item.poster_path}" loading="lazy">
+            <div class="movie-info">
+                <h3>${item.title || item.name}</h3>
+                <span>${year} • ${type}</span>
+            </div>`;
         card.onclick = () => showDetails(item);
         container.appendChild(card);
     });
@@ -41,6 +52,7 @@ async function showDetails(item) {
     homeView.style.display = 'none';
     detailsView.style.display = 'block';
     window.scrollTo(0, 0);
+
     currentId = item.id;
     currentType = item.media_type || (item.first_air_date ? 'tv' : 'movie');
 
@@ -49,12 +61,16 @@ async function showDetails(item) {
     document.getElementById('details-title').innerText = item.title || item.name;
     document.getElementById('details-desc').innerText = item.overview;
     document.getElementById('details-rating').innerText = "★ " + (item.vote_average || 0).toFixed(1);
-    document.getElementById('details-year').innerText = (item.release_date || item.first_air_date || "2024").split('-')[0];
+    document.getElementById('details-year').innerText = (item.release_date || item.first_air_date || "").split('-')[0];
 
-    srvSwitcher.style.display = 'block'; 
+    srvSwitcher.style.display = 'block';
+    
+    // Stop previous video
+    iframe.src = '';
+
     if (currentType === 'tv') {
         document.getElementById('tv-controls').style.display = 'block';
-        document.getElementById('player-container').style.display = 'none';
+        document.getElementById('player-container').style.display = 'none'; // Hide player initially for TV
         loadSeasons(currentId);
     } else {
         document.getElementById('tv-controls').style.display = 'none';
@@ -64,18 +80,21 @@ async function showDetails(item) {
 
 function updatePlayer() {
     let url = "";
-    const p = "?auto_play=true&sub_f=1";
+    // FORCE SUBTITLES & AUTOPLAY PARAMETERS
+    const params = "?auto_play=1&sub_f=1&ds_lang=en&sc_r=1&iv_load_policy=3"; 
+
     if (currentType === 'movie') {
-        if (currentSrv === 1) url = `https://vidsrc.to/embed/movie/${currentId}${p}`;
-        if (currentSrv === 2) url = `https://vidsrc.xyz/embed/movie/${currentId}${p}`;
+        if (currentSrv === 1) url = `https://vidsrc.to/embed/movie/${currentId}${params}`;
+        if (currentSrv === 2) url = `https://vidsrc.xyz/embed/movie/${currentId}${params}`;
         if (currentSrv === 3) url = `https://vidsrc.me/embed/movie?tmdb=${currentId}`;
     } else {
-        if (currentSrv === 1) url = `https://vidsrc.to/embed/tv/${currentId}/${currentS}/${currentE}${p}`;
-        if (currentSrv === 2) url = `https://vidsrc.xyz/embed/tv/${currentId}/${currentS}/${currentE}${p}`;
+        if (currentSrv === 1) url = `https://vidsrc.to/embed/tv/${currentId}/${currentS}/${currentE}${params}`;
+        if (currentSrv === 2) url = `https://vidsrc.xyz/embed/tv/${currentId}/${currentS}/${currentE}${params}`;
         if (currentSrv === 3) url = `https://vidsrc.me/embed/tv?tmdb=${currentId}&sea=${currentS}&epi=${currentE}`;
     }
-    iframe.src = url;
+    
     document.getElementById('player-container').style.display = 'block';
+    iframe.src = url;
 }
 
 function changeServer(n) {
@@ -101,7 +120,7 @@ async function loadSeasons(id) {
         };
         t.appendChild(b);
     });
-    t.firstChild.click();
+    if(t.firstChild) t.firstChild.click();
 }
 
 async function loadEpisodes(id, s) {
@@ -112,21 +131,35 @@ async function loadEpisodes(id, s) {
         const i = document.createElement('div');
         i.className = 'episode-item';
         i.innerHTML = `<strong>Eps ${e.episode_number}:</strong> ${e.name}`;
-        i.onclick = () => { currentE = e.episode_number; updatePlayer(); scrollToPlayer(); };
+        i.onclick = () => { 
+            currentE = e.episode_number; 
+            updatePlayer(); 
+            scrollToPlayer(); 
+        };
         l.appendChild(i);
     });
 }
 
-function showHome() { homeView.style.display = 'block'; detailsView.style.display = 'none'; iframe.src = ''; }
-function scrollToPlayer() { window.scrollTo({ top: document.getElementById('watch-section').offsetTop - 80, behavior: 'smooth' }); }
+function showHome() { 
+    homeView.style.display = 'block'; 
+    detailsView.style.display = 'none'; 
+    iframe.src = ''; // Stop video
+}
 
+function scrollToPlayer() { 
+    const el = document.getElementById('watch-section');
+    if(el) window.scrollTo({ top: el.offsetTop - 60, behavior: 'smooth' });
+}
+
+// Search Logic
 document.getElementById('search-form').onsubmit = async (e) => {
     e.preventDefault();
     const val = document.getElementById('search-input').value;
     if (!val) return;
+    
     const d = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${val}`).then(r => r.json());
-    homepageSections.style.display = 'none';
-    searchSection.style.display = 'block';
+    
+    homepageContent.style.display = 'none';
+    document.getElementById('search-results').style.display = 'block';
     renderRow(d.results, 'search-list');
-    document.getElementById('search-list').className = 'card-row-grid'; // Force grid for search
 };
