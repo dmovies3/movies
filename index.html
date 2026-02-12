@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dmovies - Watch Free Movies & TV Shows Online</title>
     
-    <!-- Favicon & SEO -->
     <link rel="icon" type="image/png" href="DmoviesFavicon.png">
     <meta name="description" content="Watch movies and TV shows online for free in HD. Dmovies offers streaming with subtitles and no registration.">
     <meta property="og:image" content="DmoviesLogo.png">
@@ -29,7 +28,6 @@
         </nav>
     </header>
 
-    <!-- VIEW 1: HOME PAGE -->
     <div id="home-view">
         <section class="hero">
             <h1>Find Movies, TV shows and more</h1>
@@ -40,13 +38,11 @@
         </section>
         
         <main class="container">
-            <!-- Search Results Container -->
             <div id="search-results" style="display:none;">
                 <h2 class="section-title">Search Results</h2>
                 <div id="search-list" class="card-row-grid"></div>
             </div>
 
-            <!-- Homepage Sections -->
             <div id="homepage-content">
                 <section class="movie-section">
                     <h2 class="section-title">Trending Now</h2>
@@ -66,7 +62,7 @@
         </main>
     </div>
 
-    <!-- VIEW 2: DETAILS & PLAYER PAGE -->
+    <!-- DETAILS VIEW -->
     <div id="details-view" style="display:none;">
         <div id="details-backdrop" class="backdrop">
             <div class="backdrop-overlay">
@@ -76,9 +72,14 @@
                         <img id="details-poster" src="" alt="">
                         <div class="text-info">
                             <h2 id="details-title"></h2>
+                            
+                            <!-- DITO LALABAS ANG RATING, YEAR AT RUNTIME -->
                             <div class="meta-data">
-                                <span id="details-rating"></span> • <span id="details-year"></span>
+                                <span id="details-rating"></span> • 
+                                <span id="details-year"></span> • 
+                                <span id="details-runtime" style="color:#fff;"></span>
                             </div>
+                            
                             <p id="details-desc"></p>
                             <button class="watch-now-btn" onclick="scrollToPlayer()">WATCH NOW</button>
                         </div>
@@ -88,12 +89,10 @@
         </div>
 
         <div id="watch-section" class="watch-section container">
-            <!-- PLAYER CONTAINER (Fixed Ratio for Mobile) -->
             <div id="player-container" class="player-wrapper">
                 <iframe id="video-iframe" src="" frameborder="0" allowfullscreen></iframe>
             </div>
 
-            <!-- SERVER SWITCHER -->
             <div id="server-switcher" class="server-switcher" style="display:none;">
                 <p>If the player is slow or has too many ads, try another server:</p>
                 <div class="server-list">
@@ -103,7 +102,6 @@
                 </div>
             </div>
 
-            <!-- TV EPISODES -->
             <div id="tv-controls" style="display:none;">
                 <h3 style="margin-bottom:15px; color:#a6d5bf;">Select Episode</h3>
                 <div class="season-tabs" id="season-tabs"></div>
@@ -116,7 +114,7 @@
         <p>&copy; 2024 Dmovies. Powered by TMDB.</p>
     </footer>
 
-    <!-- ADSTERRA CODE -->
+    <!-- ADSTERRA SOCIAL BAR CODE (ITO YUNG ADS MO IDOL) -->
     <script src="https://pl28698254.effectivegatecpm.com/77/85/e3/7785e37cf5cfc06b7139a449d3a81235.js"></script>
 
     <script src="js/home.js"></script>

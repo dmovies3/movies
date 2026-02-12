@@ -1,5 +1,5 @@
 const API_KEY = 'ff92f7f3c703f962c7ef5f13285067c3';
-const IMG_PATH = 'https://image.tmdb.org/t/p/w500'; // Changed to w500 for faster mobile load
+const IMG_PATH = 'https://image.tmdb.org/t/p/w500';
 const BACKDROP_PATH = 'https://image.tmdb.org/t/p/original';
 
 let currentId = null;
@@ -12,7 +12,6 @@ const homeView = document.getElementById('home-view');
 const detailsView = document.getElementById('details-view');
 const iframe = document.getElementById('video-iframe');
 const srvSwitcher = document.getElementById('server-switcher');
-const searchList = document.getElementById('search-list');
 const searchResults = document.getElementById('search-results');
 const homepageContent = document.getElementById('homepage-content');
 
@@ -33,7 +32,6 @@ function renderRow(items, elementId) {
         if (!item.poster_path) return;
         const card = document.createElement('div');
         card.className = 'movie-card';
-        // Check Metadata
         const year = (item.release_date || item.first_air_date || "N/A").split('-')[0];
         const type = item.media_type === 'tv' || item.first_air_date ? 'TV' : 'Movie';
         
@@ -56,21 +54,34 @@ async function showDetails(item) {
     currentId = item.id;
     currentType = item.media_type || (item.first_air_date ? 'tv' : 'movie');
 
+    // Basic Info
     document.getElementById('details-backdrop').style.backgroundImage = `url(${BACKDROP_PATH + item.backdrop_path})`;
     document.getElementById('details-poster').src = IMG_PATH + item.poster_path;
     document.getElementById('details-title').innerText = item.title || item.name;
     document.getElementById('details-desc').innerText = item.overview;
     document.getElementById('details-rating').innerText = "★ " + (item.vote_average || 0).toFixed(1);
     document.getElementById('details-year').innerText = (item.release_date || item.first_air_date || "").split('-')[0];
+    
+    // NEW: FETCH RUNTIME/DURATION
+    const runtimeUrl = `https://api.themoviedb.org/3/${currentType}/${currentId}?api_key=${API_KEY}`;
+    fetch(runtimeUrl).then(r => r.json()).then(details => {
+        let duration = "";
+        if(currentType === 'movie' && details.runtime) {
+            duration = `${details.runtime}m`;
+        } else if(currentType === 'tv' && details.episode_run_time?.length > 0) {
+            duration = `${details.episode_run_time[0]}m`;
+        } else {
+            duration = currentType === 'tv' ? "Series" : "Movie";
+        }
+        document.getElementById('details-runtime').innerText = duration;
+    });
 
     srvSwitcher.style.display = 'block';
-    
-    // Stop previous video
     iframe.src = '';
 
     if (currentType === 'tv') {
         document.getElementById('tv-controls').style.display = 'block';
-        document.getElementById('player-container').style.display = 'none'; // Hide player initially for TV
+        document.getElementById('player-container').style.display = 'none';
         loadSeasons(currentId);
     } else {
         document.getElementById('tv-controls').style.display = 'none';
@@ -80,7 +91,6 @@ async function showDetails(item) {
 
 function updatePlayer() {
     let url = "";
-    // FORCE SUBTITLES & AUTOPLAY PARAMETERS
     const params = "?auto_play=1&sub_f=1&ds_lang=en&sc_r=1&iv_load_policy=3"; 
 
     if (currentType === 'movie') {
@@ -131,11 +141,7 @@ async function loadEpisodes(id, s) {
         const i = document.createElement('div');
         i.className = 'episode-item';
         i.innerHTML = `<strong>Eps ${e.episode_number}:</strong> ${e.name}`;
-        i.onclick = () => { 
-            currentE = e.episode_number; 
-            updatePlayer(); 
-            scrollToPlayer(); 
-        };
+        i.onclick = () => { currentE = e.episode_number; updatePlayer(); scrollToPlayer(); };
         l.appendChild(i);
     });
 }
@@ -143,7 +149,7 @@ async function loadEpisodes(id, s) {
 function showHome() { 
     homeView.style.display = 'block'; 
     detailsView.style.display = 'none'; 
-    iframe.src = ''; // Stop video
+    iframe.src = '';
 }
 
 function scrollToPlayer() { 
@@ -151,14 +157,11 @@ function scrollToPlayer() {
     if(el) window.scrollTo({ top: el.offsetTop - 60, behavior: 'smooth' });
 }
 
-// Search Logic
 document.getElementById('search-form').onsubmit = async (e) => {
     e.preventDefault();
     const val = document.getElementById('search-input').value;
     if (!val) return;
-    
     const d = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${val}`).then(r => r.json());
-    
     homepageContent.style.display = 'none';
     document.getElementById('search-results').style.display = 'block';
     renderRow(d.results, 'search-list');
