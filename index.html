@@ -4,25 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <!-- TITLE NG SITE MO -->
     <title>Dmovies - Watch Free Movies & TV Shows Online</title>
 
-    <!-- FAVICON -->
     <link rel="icon" type="image/png" href="DmoviesFavicon.png">
 
-    <!-- SEO & META TAGS (ITO NA YUNG KUMPLETO) -->
+    <!-- SEO & META TAGS -->
     <meta name="description" content="Watch the latest movies and TV shows online for free in HD quality on Dmovies. No registration required.">
-    <meta name="keywords" content="movies, streaming, free cinema, Dmovies, watch tv shows online, the strain free, free movies online, watch hd movies, pinoy movies">
-    
-    <!-- SOCIAL MEDIA PREVIEW (FB/Messenger) -->
+    <meta name="keywords" content="movies, streaming, free cinema, Dmovies, watch tv shows online, the strain free, free movies online, watch hd movies">
     <meta property="og:title" content="Dmovies - Your Home for Free Streaming">
     <meta property="og:description" content="Stream thousands of movies and series for free. Watch Dmovies now!">
     <meta property="og:image" content="DmoviesLogo.png">
     <meta property="og:url" content="https://dmovies.pages.dev/">
 
-    <!-- STYLES -->
     <link rel="stylesheet" href="css/home.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+
+    <!-- POPADS CODE (Recommended location: inside head) -->
+    <script type="text/javascript" data-cfasync="false">
+    /*<![CDATA[/* */
+    (function(){var f=window,a="eb510a960fc0a0e7e6cde635b163b543",h=[["siteId",151*296-68-11+840+5231308],["minBid",0],["popundersPerIP","0"],["delayBetween",0],["default",false],["defaultPerDay",0],["topmostLayer","auto"]],g=["d3d3LmNkbjRhZHMuY29tL05BL1ZaaS91c3ZnLmNvbm5lY3RhYmxlLm1pbi5qcw==","ZDNnNW92Zm5nanc5YncuY2xvdWRmcm9udC5uZXQvbmJhY2tib25lLmxvY2FsU3RvcmFnZS1taW4uanM="],l=-1,u,t,m=function(){clearTimeout(t);l++;if(g[l]&&!(1796867482000<(new Date).getTime()&&1<l)){u=f.document.createElement("script");u.type="text/javascript";u.async=!0;var p=f.document.getElementsByTagName("script")[0];u.src="https://"+atob(g[l]);u.crossOrigin="anonymous";u.onerror=m;u.onload=function(){clearTimeout(t);f[a.slice(0,16)+a.slice(0,16)]||m()};t=setTimeout(m,5E3);p.parentNode.insertBefore(u,p)}};if(!f[a]){try{Object.freeze(f[a]=h)}catch(e){}m()}})();
+    /*]]>/* */
+    </script>
 </head>
 <body>
 
@@ -32,7 +34,6 @@
         </div>
         <nav>
             <ul>
-                <!-- MENU WITH FUNCTIONS -->
                 <li><a href="#" onclick="loadHomepage()">Home</a></li>
                 <li><a href="#" onclick="loadGenres()">Genre</a></li>
                 <li><a href="#" onclick="loadMoviesPage()">Movies</a></li>
@@ -41,7 +42,6 @@
         </nav>
     </header>
 
-    <!-- VIEW 1: HOME PAGE -->
     <div id="home-view">
         <section class="hero">
             <h1>Find Movies, TV shows and more</h1>
@@ -52,13 +52,11 @@
         </section>
         
         <main class="container">
-            <!-- Search / Genre Results Container -->
             <div id="search-results" style="display:none;">
                 <h2 class="section-title">Search Results</h2>
                 <div id="search-list" class="card-row-grid"></div>
             </div>
 
-            <!-- Homepage Sections -->
             <div id="homepage-content">
                 <section class="movie-section">
                     <h2 class="section-title">Trending Now</h2>
@@ -78,7 +76,7 @@
         </main>
     </div>
 
-    <!-- VIEW 2: DETAILS PAGE -->
+    <!-- DETAILS VIEW -->
     <div id="details-view" style="display:none;">
         <div id="details-backdrop" class="backdrop">
             <div class="backdrop-overlay">
@@ -88,14 +86,11 @@
                         <img id="details-poster" src="" alt="">
                         <div class="text-info">
                             <h2 id="details-title"></h2>
-                            
-                            <!-- DETAILS & RUNTIME -->
                             <div class="meta-data">
                                 <span id="details-rating"></span> • 
                                 <span id="details-year"></span> • 
-                                <span id="details-runtime" style="color:#fff;"></span>
+                                <span id="details-runtime" style="color:#a6d5bf;"></span>
                             </div>
-                            
                             <p id="details-desc"></p>
                             <button class="watch-now-btn" onclick="scrollToPlayer()">WATCH NOW</button>
                         </div>
@@ -127,10 +122,11 @@
     </div>
 
     <footer>
-        <p>&copy; 2024 Dmovies. Powered by TMDB.</p>
+        <p>&copy; <span id="year"></span> Dmovies. Powered by TMDB.</p>
+        <script>document.getElementById("year").innerHTML = new Date().getFullYear();</script>
     </footer>
 
-    <!-- ADSTERRA SOCIAL BAR CODE -->
+    <!-- ADSTERRA SOCIAL BAR -->
     <script src="https://pl28698254.effectivegatecpm.com/77/85/e3/7785e37cf5cfc06b7139a449d3a81235.js"></script>
 
     <script src="js/home.js"></script>
